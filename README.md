@@ -7,11 +7,11 @@ User testing group, session ID, user ID, total recommended movies watched during
 
 ```
 {
-sessionId: 12343446435,
-userId: 534356757834,
-groupId: 1,
-recs: 1.0,
-nonRecs: 0.7
+  sessionId: 12343446435,
+  userId: 534356757834,
+  groupId: 1,
+  recs: 1.0,
+  nonRecs: 0.7
 } 
 ```
 
@@ -20,10 +20,10 @@ User ID, list of already watched movie IDs, updated genre preferences
 
 ```
 {
-userId: 534356757834,
-profile: {action: 33, comedy: 20, drama: 44, romance: 33,
-SF: 2, ...},
-movieHistory: [543, 155, ...]
+  userId: 534356757834,
+  profile: {action: 33, comedy: 20, drama: 44, romance: 33,
+  SF: 2, ...},
+  movieHistory: [543, 155, ...]
 } 
 ```
 
@@ -41,5 +41,3 @@ User ID, list of recommended movie IDs
   rec: [23, 105, 765, 32, 479]
 } 
 ```
-
-
