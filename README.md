@@ -60,9 +60,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 - etc
 
 ## System Architecture
-![System Architecture](https://github.com/Tetraflix/recommendations/blob/development/images/architecture.jpeg)
+![System Architecture](https://github.com/Tetraflix/recommendations/blob/development/images/architecture.png)
 
-![Database Schema](https://github.com/Tetraflix/recommendations/blob/development/images/schema.jpeg)
+![Database Schema](https://github.com/Tetraflix/recommendations/blob/development/images/schema.png)
 
 ## Inputs/Outputs
 
