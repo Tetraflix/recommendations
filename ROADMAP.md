@@ -3,9 +3,10 @@
 ## Sprint 1 (10/23)
 - Repo Setup
 - Redis Setup (for movies database)
+- Sequelize/PostgreSQL Setup (for ratios database)
 
 ## Sprint 2
-- TBD
+- Set up Test Suite
 
 ## Sprint 3
 - TBD
