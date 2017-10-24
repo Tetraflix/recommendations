@@ -1,6 +1,6 @@
 # Roadmap
 
-## Sprint 1 (10/23)
+## Sprint 1
 - Repo Setup
 - Redis Setup (for movies database)
 - Sequelize/PostgreSQL Setup (for ratios database)
