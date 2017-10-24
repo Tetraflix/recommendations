@@ -15,4 +15,26 @@ sequelize.authenticate()
     console.error('Error connecting Sequelize', err);
   });
 
-module.exports = sequelize;
+const UserRatio = sequelize.define('user_ratio', {
+  ratio: Sequelize.DECIMAL,
+  userId: Sequelize.INTEGER,
+  groupId: Sequelize.INTEGER,
+});
+
+const TotalRatio = sequelize.define('total_ratio', {
+  ratio: Sequelize.DECIMAL,
+  groupId: Sequelize.INTEGER,
+});
+
+UserRatio.sync()
+  .then(() => {
+    TotalRatio.sync();
+  })
+  .catch((err) => {
+    console.error('Error syncing tables', err);
+  });
+
+module.exports = {
+  UserRatio,
+  TotalRatio,
+};

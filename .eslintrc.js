@@ -37,6 +37,7 @@ module.exports = {
     'comma-style': [2, 'last'],
     'quotes': [1, 'single'],
     'import/no-unresolved': 1,
-    'comma-dangle': 1
+    'comma-dangle': 1,
+    'no-param-reassign': 1,
   }
 };

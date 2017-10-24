@@ -7,6 +7,8 @@
 
 ## Sprint 2
 - Set up Test Suite
+- Research Elastic Search
+- Research Kibana
 
 ## Sprint 3
 - TBD
