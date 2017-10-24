@@ -36,6 +36,7 @@ module.exports = {
     /* Minuta */
     'comma-style': [2, 'last'],
     'quotes': [1, 'single'],
-    'import/no-unresolved': 1
+    'import/no-unresolved': 1,
+    'comma-dangle': 1
   }
 };
