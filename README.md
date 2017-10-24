@@ -73,7 +73,6 @@ User testing group, session ID, user ID, total recommended movies watched during
 
 ```
 {
-  sessionId: 12343446435,
   userId: 534356757834,
   groupId: 1,
   recs: 1.0,
