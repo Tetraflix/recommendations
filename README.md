@@ -14,8 +14,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 1. [Data Flow](#data-flow)
 1. [Requirements](#requirements)
-1. [System Architecture](#Inputs/Outputs)
-1. [Inputs/Outputs](#Inputs/Outputs)
+1. [System Architecture](#system-architecture)
+1. [Inputs/Outputs](#inputs/outputs)
 
 ## Data Flow:
 ![Data Flow](https://github.com/Tetraflix/recommendations/blob/development/images/data-flow.jpeg)
