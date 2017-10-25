@@ -25,10 +25,9 @@ for (let i = 0; i < totalEvents; i += 1) {
   users.push(generateUser());
 }
 
-const addRows = (tableName, array) => {
-  console.log(array);
-  return ratioDB[tableName].bulkCreate(array);
-};
+const addRows = (tableName, array) => (
+  ratioDB[tableName].bulkCreate(array)
+);
 
 const genDailyTotals = () => {
   const queryString = `SELECT "groupId",
