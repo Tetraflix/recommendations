@@ -1,8 +1,5 @@
 const ratioDB = require('../ratios/index.js');
 
-// console.log(ratioDB.UserRatio);
-// console.log(ratioDB.TotalRatio);
-
 const users = [
   {
     ratio: 0.63443, userId: 123434, groupId: 0, createdAt: '2016-10-20 15:37:42.997-07'

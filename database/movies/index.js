@@ -1,4 +1,6 @@
 const redis = require('redis');
+const bluebird = require('bluebird');
+bluebird.promisifyAll(redis.RedisClient.prototype);
 
 const port = process.env.PORT || 6379;
 const redisClient = redis.createClient({ host: 'localhost', port });
