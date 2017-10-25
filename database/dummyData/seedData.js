@@ -25,26 +25,26 @@ for (let i = 0; i < totalEvents; i += 1) {
   users.push(generateUser());
 }
 
-// const averages = users.reduce((arr, user) => {
-//   arr[user.groupId] = (user.ratio + arr[user.groupId]) / 2;
-//   return arr;
-// }, [0, 0]);
-// const totals = [
-//   { ratio: averages[0], groupId: 0 },
-//   { ratio: averages[1], groupId: 1 }
-// ];
 const addRows = (tableName, array) => {
-  console.log(new Date());
+  console.log(array);
   return ratioDB[tableName].bulkCreate(array);
 };
 
+const genDailyTotals = () => {
+  const queryString = `SELECT "groupId",
+    CAST("createdAt" AS DATE) AS DateField,
+    AVG(ratio) FROM user_ratios
+    GROUP BY CAST("createdAt" AS DATE),
+    "groupId"`;
+  return ratioDB.sequelize.query(queryString);
+};
 
 module.exports = () => (
   ratioDB.UserRatio.sync()
     .then(() => (ratioDB.TotalRatio.sync({ force: true })))
     .then(() => (addRows('UserRatio', users)))
-    .then(() => (console.log(new Date())))
-    // .then(() => (addRows('TotalRatio', totals)))
+    .then(() => (genDailyTotals()))
+    .then(results => (addRows('TotalRatio', results[0])))
     .catch((err) => {
       console.log('Error adding dummy data', err);
     })

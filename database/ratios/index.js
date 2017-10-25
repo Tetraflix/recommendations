@@ -35,6 +35,7 @@ UserRatio.sync()
   });
 
 module.exports = {
+  sequelize,
   UserRatio,
   TotalRatio,
 };
