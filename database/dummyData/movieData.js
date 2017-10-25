@@ -29,6 +29,6 @@ module.exports = (i = 0) => {
       return i;
     })
     .catch((err) => {
-      console.error('Error adding data to redisClient', err);
+      console.error('Error adding dummy data to redisClient', err);
     });
 };
