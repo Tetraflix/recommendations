@@ -2,7 +2,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const should = chai.should();
-// const app = require('../server/index.js');
 const ratioDB = require('../database/ratios/index.js');
 
 describe('Ratio Data', () => {

@@ -19,16 +19,16 @@ const genProfile = () => {
   return profile;
 };
 
-module.exports = (i = 0) => {
+const importData = (i = 1) => (
   redisClient.delAsync(i)
     .then(() => (redisClient.lpushAsync(i, ...genProfile())))
     .then(() => {
       if (i < 300000) {
-        return module.exports(i + 1);
+        return importData(i + 1);
       }
-      return i;
     })
-    .catch((err) => {
-      console.error('Error adding dummy data to redisClient', err);
-    });
-};
+);
+
+module.exports = (cb, i = 1) => (
+  importData()
+);

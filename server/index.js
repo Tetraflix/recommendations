@@ -8,24 +8,21 @@ const app = express();
 const port = 3000;
 
 app.post('/dummydata', (req, res) => {
+  const args = [];
   if (req.query.entries) {
-    seedData(Number(req.query.entries))
-      .then(() => {
-        res.sendStatus(201);
-      })
-      .catch(() => (res.sendStatus(400)));
-  } else {
-    seedData()
-      .then(() => {
-        res.sendStatus(201);
-      })
-      .catch(() => (res.sendStatus(400)));
+    args.push(Number(req.query.entries));
   }
+  seedData(...args)
+    .then(() => {
+      res.sendStatus(201);
+    })
+    .catch(() => (res.sendStatus(400)));
 });
 
 app.post('/moviedata', (req, res) => {
-  movieData();
-  res.sendStatus(201);
+  movieData()
+    .then(() => res.sendStatus(201))
+    .catch(err => console.error('Error posting dummy movie data', err));
 });
 
 app.listen(port, () => {
