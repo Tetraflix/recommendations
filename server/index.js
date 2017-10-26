@@ -8,10 +8,19 @@ const app = express();
 const port = 3000;
 
 app.post('/dummydata', (req, res) => {
-  seedData()
-    .then(() => {
-      res.sendStatus(201);
-    });
+  if (req.query.entries) {
+    seedData(Number(req.query.entries))
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch(() => (res.sendStatus(400)));
+  } else {
+    seedData()
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch(() => (res.sendStatus(400)));
+  }
 });
 
 app.post('/moviedata', (req, res) => {
@@ -22,3 +31,5 @@ app.post('/moviedata', (req, res) => {
 app.listen(port, () => {
   console.log(`App is listening on Port ${port}!`);
 });
+
+module.exports = app;

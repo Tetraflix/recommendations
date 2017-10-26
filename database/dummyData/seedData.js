@@ -1,6 +1,6 @@
 const ratioDB = require('../ratios/index.js');
 
-const totalEvents = 1000000;
+let totalEvents;
 
 let createdAt = new Date('2017-07-14 15:37:42.997-07');
 const incrementTime = date => (new Date(date.getTime() + 5000));
@@ -19,11 +19,15 @@ const generateUser = () => {
   };
 };
 
-const users = [];
-for (let i = 0; i < totalEvents; i += 1) {
-  createdAt = incrementTime(createdAt);
-  users.push(generateUser());
-}
+
+const generateUsers = () => {
+  const users = [];
+  for (let i = 1; i <= totalEvents; i += 1) {
+    createdAt = incrementTime(createdAt);
+    users.push(generateUser());
+  }
+  return users;
+};
 
 const addRows = (tableName, array) => (
   ratioDB[tableName].bulkCreate(array)
@@ -38,13 +42,15 @@ const genDailyTotals = () => {
   return ratioDB.sequelize.query(queryString);
 };
 
-module.exports = () => (
-  ratioDB.UserRatio.sync()
+module.exports = (num = 1000000) => {
+  totalEvents = num;
+  const users = generateUsers();
+  return ratioDB.UserRatio.sync()
     .then(() => (ratioDB.TotalRatio.sync({ force: true })))
     .then(() => (addRows('UserRatio', users)))
     .then(() => (genDailyTotals()))
     .then(results => (addRows('TotalRatio', results[0])))
     .catch((err) => {
       console.log('Error adding dummy data', err);
-    })
-);
+    });
+};
