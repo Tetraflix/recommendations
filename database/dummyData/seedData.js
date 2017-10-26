@@ -8,7 +8,7 @@ const incrementTime = date => (new Date(date.getTime() + 8000));
 const generateUser = () => {
   const userId = Math.floor(Math.random() * (totalEvents / 10));
   let ratio = Math.random();
-  while (ratio < 0.4) {
+  while (ratio < 0.2) {
     ratio = Math.random();
   }
   return {
@@ -35,15 +35,15 @@ const addRows = (tableName, array) => (
 
 const genDailyTotals = () => {
   const queryString = `SELECT "groupId",
-    CAST("createdAt" AS DATE) AS DateField,
-    AVG(ratio) FROM user_ratios
+    CAST("createdAt" AS DATE) AS Date,
+    AVG(ratio) AS "avgRatio" FROM user_ratios
     GROUP BY CAST("createdAt" AS DATE),
     "groupId"`;
   return ratioDB.sequelize.query(queryString);
 };
 
 module.exports = (num = 1000000) => {
-  totalEvents = !!num ? num : 1000000;
+  totalEvents = !num ? 1000000 : num;
   const users = generateUsers();
   console.log(totalEvents);
   return ratioDB.UserRatio.sync()
