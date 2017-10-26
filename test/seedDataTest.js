@@ -4,7 +4,8 @@ chai.use(chaiHttp);
 const should = chai.should();
 const ratioDB = require('../database/ratios/index.js');
 
-describe('Ratio Data', () => {
+xdescribe('Ratio Data', () => {
+
   beforeEach ((done) => {
     ratioDB.UserRatio.destroy({ where: {}, truncate: true })
       .then(() => done())

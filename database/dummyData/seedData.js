@@ -3,7 +3,7 @@ const ratioDB = require('../ratios/index.js');
 let totalEvents;
 
 let createdAt = new Date('2017-07-14 15:37:42.997-07');
-const incrementTime = date => (new Date(date.getTime() + 5000));
+const incrementTime = date => (new Date(date.getTime() + 8000));
 
 const generateUser = () => {
   const userId = Math.floor(Math.random() * (totalEvents / 10));
@@ -43,8 +43,9 @@ const genDailyTotals = () => {
 };
 
 module.exports = (num = 1000000) => {
-  totalEvents = num;
+  totalEvents = !!num ? num : 1000000;
   const users = generateUsers();
+  console.log(totalEvents);
   return ratioDB.UserRatio.sync()
     .then(() => (ratioDB.TotalRatio.sync({ force: true })))
     .then(() => (addRows('UserRatio', users)))

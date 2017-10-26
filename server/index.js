@@ -8,11 +8,7 @@ const app = express();
 const port = 3000;
 
 app.post('/dummydata', (req, res) => {
-  const args = [];
-  if (req.query.entries) {
-    args.push(Number(req.query.entries));
-  }
-  seedData(...args)
+  seedData(Number(req.query.entries))
     .then(() => {
       res.sendStatus(201);
     })
