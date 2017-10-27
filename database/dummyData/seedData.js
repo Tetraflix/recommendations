@@ -37,18 +37,6 @@ const generateUsers = () => {
   return users;
 };
 
-// const generateDocs = arr => (
-//   arr.map(elem => (
-//     [{ index: {} },
-//       {
-//         ratio: elem.ratio,
-//         userId: elem.userId,
-//         groupId: elem.groupId,
-//         createdAt: elem.createdAt,
-//       }]
-//   )).reduce((a, b) => (a.concat(b)))
-// );
-
 const addRows = (tableName, array) => (
   ratioDB[tableName].bulkCreate(array)
 );
@@ -66,8 +54,6 @@ module.exports = (num = 1000000) => {
   totalEvents = !num ? 1000000 : num;
   const users = generateUsers();
   console.log('finished generating users', new Date());
-  // const docs = generateDocs(users);
-  // console.log('finished generating docs', new Date());
   return ratioDB.UserRatio.sync()
     .then(() => (ratioDB.TotalRatio.sync({ force: true })))
     .then(() => (addRows('UserRatio', users[0])))

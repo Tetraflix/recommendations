@@ -13,34 +13,6 @@ client.ping({ requestTimeout: 30000 }, (err) => {
   }
 });
 
-// const addUser = (i, max) => (
-//   ratioDB.UserRatio.findById(i)
-//     .then((row) => {
-//       if (i <= max) {
-//         row = JSON.parse(JSON.stringify(row));
-//         const doc = {
-//           index: 'user-ratios',
-//           type: 'user-ratio',
-//           id: row.id.toString(),
-//           body: {
-//             ratio: Number(row.ratio),
-//             userId: row.userId,
-//             groupId: row.groupId,
-//             createdAt: row.createdAt,
-//           }
-//         };
-//         return client.create(doc);
-//       }
-//     })
-//     .then(() => (addUser(i + 1, max)))
-//     .catch(() => {
-//       if (i < max) {
-//         return addUser(i + 1, max);
-//       }
-//       return null;
-//     })
-// );
-
 const addUser = (row) => {
   row = JSON.parse(JSON.stringify(row));
   const doc = {
