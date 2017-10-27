@@ -1,8 +1,9 @@
 const ratioDB = require('../ratios/index.js');
+const es = require('../dashboard/dashboardData.js');
 
 let totalEvents;
 
-let createdAt = new Date('2017-07-14 15:37:42.997-07');
+let createdAt = new Date('2017-07-20 15:37:42.997-07');
 const incrementTime = date => (new Date(date.getTime() + 8000));
 
 const generateUser = () => {
@@ -20,13 +21,33 @@ const generateUser = () => {
 };
 
 const generateUsers = () => {
-  const users = [];
+  const users = [[], []];
   for (let i = 1; i <= totalEvents; i += 1) {
     createdAt = incrementTime(createdAt);
-    users.push(generateUser());
+    const elem = generateUser();
+    users[0].push(elem);
+    users[1].push({
+      index: {
+        _index: 'user-ratios',
+        _type: 'user-ratio',
+      },
+    });
+    users[1].push(elem);
   }
   return users;
 };
+
+// const generateDocs = arr => (
+//   arr.map(elem => (
+//     [{ index: {} },
+//       {
+//         ratio: elem.ratio,
+//         userId: elem.userId,
+//         groupId: elem.groupId,
+//         createdAt: elem.createdAt,
+//       }]
+//   )).reduce((a, b) => (a.concat(b)))
+// );
 
 const addRows = (tableName, array) => (
   ratioDB[tableName].bulkCreate(array)
@@ -44,10 +65,13 @@ const genDailyTotals = () => {
 module.exports = (num = 1000000) => {
   totalEvents = !num ? 1000000 : num;
   const users = generateUsers();
-  console.log(totalEvents);
+  console.log('finished generating users', new Date());
+  // const docs = generateDocs(users);
+  // console.log('finished generating docs', new Date());
   return ratioDB.UserRatio.sync()
     .then(() => (ratioDB.TotalRatio.sync({ force: true })))
-    .then(() => (addRows('UserRatio', users)))
+    .then(() => (addRows('UserRatio', users[0])))
+    .then(() => (es.bulkAdd(users[1])))
     .then(() => (genDailyTotals()))
     .then(results => (addRows('TotalRatio', results[0])))
     .catch((err) => {
