@@ -19,7 +19,6 @@ const generateUser = () => {
   };
 };
 
-
 const generateUsers = () => {
   const users = [];
   for (let i = 1; i <= totalEvents; i += 1) {
