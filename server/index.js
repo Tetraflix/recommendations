@@ -1,14 +1,20 @@
 const express = require('express');
+const path = require('path');
+const util = require('util');
+const fs = require('fs');
 const seedData = require('../database/dummydata/seedData.js');
 const movieData = require('../database/dummydata/movieData.js');
 const genRecs = require('./genRecs.js');
 const sessionData = require('./sessionData.js');
 require('../database/movies/index.js');
-const ratioDB = require('../database/ratios/index.js');
+require('../database/ratios/index.js');
 require('../database/dashboard/dashboardData.js');
 
 const app = express();
 const port = 3000;
+
+const logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
+const log = data => (logStream.write(`${util.format(data)}\n`));
 
 app.post('/dummydata', (req, res) => {
   seedData(Number(req.query.entries))
@@ -35,6 +41,8 @@ SESSION DATA INPUT:
 */
 app.post('/sessionData', (req, res) => {
   // store session data
+  req.pipe(logStream);
+  res.status(201).send('Received post request to add session data');
 });
 
 
@@ -48,11 +56,16 @@ USER DATA INPUT:
 }
 */
 app.post('/userData', (req, res) => {
-  // generate recommendations
+  // generate recommendations & send back to requester (refactor to publish to message bus)
+  log(JSON.stringify(req.query));
+  res.status(201).send('Received post request to generate recommendations');
 });
 
 app.listen(port, () => {
   console.log(`App is listening on Port ${port}!`);
 });
 
-module.exports = app;
+module.exports = {
+  app,
+  port,
+};
