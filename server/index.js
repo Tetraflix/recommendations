@@ -41,7 +41,7 @@ SESSION DATA INPUT:
 */
 app.post('/sessionData', (req, res) => {
   // store session data
-  req.pipe(logStream);
+  log(JSON.stringify(req.query));
   res.status(201).send('Received post request to add session data');
 });
 
