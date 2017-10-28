@@ -4,7 +4,8 @@ const movieData = require('../database/dummydata/movieData.js');
 const genRecs = require('./genRecs.js');
 const sessionData = require('./sessionData.js');
 require('../database/movies/index.js');
-require('../database/ratios/index.js');
+const ratioDB = require('../database/ratios/index.js');
+require('../database/dashboard/dashboardData.js');
 
 const app = express();
 const port = 3000;
