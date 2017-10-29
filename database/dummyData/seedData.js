@@ -3,13 +3,17 @@ const es = require('../dashboard/dashboardData.js');
 
 let totalEvents;
 
-let createdAt = new Date('2017-07-20 15:37:42.997-07');
-const incrementTime = date => (new Date(date.getTime() + 8000));
+let createdAt = new Date('2017-08-05 15:37:42.997-07');
+const incrementTime = date => (new Date(date.getTime() + 10000));
 
 const generateUser = () => {
   const userId = Math.floor(Math.random() * (totalEvents / 10));
+  let min = 0.2;
+  if (userId % 2) {
+    min = Math.min(0.7, ((createdAt - new Date('2017-07-20 15:37:42.997-07')) / 10000000000));
+  }
   let ratio = Math.random();
-  while (ratio < 0.2) {
+  while (ratio < min) {
     ratio = Math.random();
   }
   return {
