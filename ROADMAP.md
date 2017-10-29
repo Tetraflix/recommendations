@@ -7,11 +7,13 @@
 
 ## Sprint 2
 - Set up Test Suite
-- Research Elastic Search
-- Research Kibana
+- Set up Elastic Search
+- Set up Kibana
 
 ## Sprint 3
-- TBD
+- Set up logstash
+- Refactor data generation for better visualization
+- Set up routes to handle live data
 
 ## Sprint 4
 - TBD

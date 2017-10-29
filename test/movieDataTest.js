@@ -4,7 +4,7 @@ chai.use(chaiHttp);
 const should = chai.should();
 const movieDB = require('../database/movies/index.js');
 
-describe('Movie Data', () => {
+xdescribe('Movie Data', () => {
   it('should create 300,000 entries', (done) => {
     chai.request('http://localhost:3000')
       .post('/movieData')

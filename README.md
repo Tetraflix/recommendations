@@ -14,6 +14,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 1. [Data Flow](#data-flow)
 1. [Requirements](#requirements)
+1. [Usage](#usage)
 1. [System Architecture](#system-architecture)
 1. [Inputs/Outputs](#inputs-and-outputs)
 
@@ -57,7 +58,27 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 - Node 6.9.x
 - Redis 3.2.x
 - Postgresql 9.6.x
-- etc
+- Elasticsearch 5.6.3
+- Kibana 5.6.3
+- Logstash 5.6.3
+
+## Usage
+
+### Elasticsearch Configuration
+
+Coming soon...
+
+#### Elasticsearch
+
+Coming soon...
+
+#### Kibana
+
+Coming soon...
+
+#### Logstash
+
+Coming soon...
 
 ## System Architecture
 ![System Architecture](https://github.com/Tetraflix/recommendations/blob/development/images/architecture.png)
