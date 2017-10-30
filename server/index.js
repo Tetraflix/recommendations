@@ -14,10 +14,14 @@ const app = express();
 const port = 3000;
 
 const logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
-const log = data => (logStream.write(`${util.format(data)}\n`));
+const log = (data) => {
+  const req = data;
+  req.date = new Date();
+  logStream.write(`${util.format(JSON.stringify(req))}\n`);
+};
 
 app.post('/dummydata', (req, res) => {
-  seedData(Number(req.query.entries))
+  seedData.genData(Number(req.query.entries))
     .then(() => {
       res.sendStatus(201);
     })
@@ -41,7 +45,7 @@ SESSION DATA INPUT:
 */
 app.post('/sessionData', (req, res) => {
   // store session data
-  log(JSON.stringify(req.query));
+  log(req.query);
   res.status(201).send('Received post request to add session data');
 });
 
@@ -57,7 +61,7 @@ USER DATA INPUT:
 */
 app.post('/userData', (req, res) => {
   // generate recommendations & send back to requester (refactor to publish to message bus)
-  log(JSON.stringify(req.query));
+  log(req.query);
   res.status(201).send('Received post request to generate recommendations');
 });
 
@@ -68,4 +72,7 @@ app.listen(port, () => {
 module.exports = {
   app,
   port,
+  log,
 };
+
+require('../liveData/sessionData.js');
