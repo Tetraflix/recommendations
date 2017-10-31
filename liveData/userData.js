@@ -1,4 +1,5 @@
 const request = require('request');
+const cron = require('node-cron');
 const { port } = require('../server/index.js');
 const { log } = require('../server/index.js');
 const { genProfile } = require('../database/dummyData/movieData.js');
@@ -39,4 +40,4 @@ const cb = (err, res) => {
   log(res.statusCode);
 };
 
-setInterval(() => (request.post(options(), cb)), 5000);
+cron.schedule('*/5 * * * * *', () => (request.post(options(), cb)));
