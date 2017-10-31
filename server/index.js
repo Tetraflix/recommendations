@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const util = require('util');
 const fs = require('fs');
+const bodyParser = require('body-parser');
 const seedData = require('../database/dummydata/seedData.js');
 const movieData = require('../database/dummydata/movieData.js');
 const genRecs = require('./genRecs.js');
@@ -19,6 +20,9 @@ const log = (data) => {
   req.date = new Date();
   logStream.write(`${util.format(JSON.stringify(req))}\n`);
 };
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.post('/dummydata', (req, res) => {
   seedData.genData(Number(req.query.entries))
@@ -44,16 +48,20 @@ SESSION DATA INPUT:
 }
 */
 app.post('/sessionData', (req, res) => {
-  log(req.query.userId);
-  sessionData(req.query)
-    .then((results) => {
-      log(results);
-      res.sendStatus(201);
-    })
-    .catch((err) => {
-      log(err);
-      console.error('Error posting session data', err);
-    });
+  log(req.body.userId || {});
+  if (!req.body.userId || !req.body.groupId || !req.body.recs || !req.body.nonRecs) {
+    res.sendStatus(400);
+  } else {
+    sessionData(req.body)
+      .then((results) => {
+        log(results);
+        res.sendStatus(201);
+      })
+      .catch((err) => {
+        log(err);
+        console.error('Error posting session data', err);
+      });
+  }
 });
 
 
@@ -67,10 +75,14 @@ USER DATA INPUT:
 */
 app.post('/userData', (req, res) => {
   // generate recommendations & send back to requester (refactor to publish to message bus)
-  log(req.query.userId);
-  genRecs.getDists(req.query, (results) => {
-    res.status(201).send(results);
-  });
+  log(req.body.userId || {});
+  if (!req.body.userId || !req.body.profile || !req.body.movieHistory) {
+    res.sendStatus(400);
+  } else {
+    genRecs.getDists(req.body, (results) => {
+      res.status(201).send(results);
+    });
+  }
 });
 
 app.listen(port, () => {

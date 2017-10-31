@@ -15,7 +15,8 @@ const genQuery = () => {
 // make post request to /sessionData
 const options = () => ({
   url: `http://localhost:${port}/sessionData`,
-  qs: genQuery(),
+  json: true,
+  body: genQuery(),
 });
 
 const cb = (err, res) => {

@@ -29,7 +29,6 @@ const genMovies = (i = 1) => (
     })
 );
 
-
 module.exports = {
   genMovies,
   genProfile,

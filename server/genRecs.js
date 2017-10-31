@@ -1,13 +1,11 @@
 const redisClient = require('../database/movies/index.js');
 
-// ids start at 1 and end at 300,000
 /*
 USER DATA INPUT:
 {
-  userId: 534356757834,
-  profile: {action: 33, comedy: 20, drama: 44, romance: 33,
-    SF: 2, ...},
-  movieHistory: [543, 155, ...]
+  userId: 5783,
+  profile: [4, 4, 15, 2, 0, 6, 16, 2, 13, 18, 6, 4, 5, 1, 4],
+  movieHistory: {543:1, 155:1, 1234:1, 2345:1, 267563:1, 103234:1, 456:1, 23423:1, 78654:1, 1234:1, 2345:1, 64546:1, 87654:1, 235734:1, 298765:1}
 }
 */
 const eucDist = (p, q) => {
@@ -19,6 +17,7 @@ const eucDist = (p, q) => {
 };
 
 const getDists = (userData, cb) => {
+  userData.profile = Array.isArray(userData.profile) ? userData.profile : JSON.parse(userData.profile);
   const distances = [];
   for (let i = 1; i <= 300000; i++) {
     redisClient.lrange(i, 0, -1, (err, res) => {
@@ -38,4 +37,5 @@ const getDists = (userData, cb) => {
 
 module.exports = {
   getDists,
+  eucDist
 };

@@ -26,7 +26,8 @@ const genQuery = () => {
 // make post request to /sessionData
 const options = () => ({
   url: `http://localhost:${port}/userData`,
-  qs: genQuery(),
+  json: true,
+  body: genQuery(),
 });
 
 const cb = (err, res) => {
@@ -38,4 +39,4 @@ const cb = (err, res) => {
   log(res.statusCode);
 };
 
-// setInterval(() => (request.post(options(), cb)), 5000);
+setInterval(() => (request.post(options(), cb)), 5000);
