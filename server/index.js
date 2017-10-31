@@ -29,7 +29,7 @@ app.post('/dummydata', (req, res) => {
 });
 
 app.post('/moviedata', (req, res) => {
-  movieData()
+  movieData.genMovies()
     .then(() => res.sendStatus(201))
     .catch(err => console.error('Error posting dummy movie data', err));
 });
@@ -44,25 +44,33 @@ SESSION DATA INPUT:
 }
 */
 app.post('/sessionData', (req, res) => {
-  // store session data
-  log(req.query);
-  res.status(201).send('Received post request to add session data');
+  log(req.query.userId);
+  sessionData(req.query)
+    .then((results) => {
+      log(results);
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      log(err);
+      console.error('Error posting session data', err);
+    });
 });
 
 
 /*
 USER DATA INPUT:
 {
-  userId: 534356757834,
-  profile: {action: 33, comedy: 20, drama: 44, romance: 33,
-    SF: 2, ...},
-  movieHistory: [543, 155, ...]
+  userId: 5783,
+  profile: [4, 4, 15, 2, 0, 6, 16, 2, 13, 18, 6, 4, 5, 1, 4],
+  movieHistory: {543:1, 155:1, 1234:1, 2345:1, 267563:1, 103234:1, 456:1, 23423:1, 78654:1, 1234:1, 2345:1, 64546:1, 87654:1, 235734:1, 298765:1}
 }
 */
 app.post('/userData', (req, res) => {
   // generate recommendations & send back to requester (refactor to publish to message bus)
-  log(req.query);
-  res.status(201).send('Received post request to generate recommendations');
+  log(req.query.userId);
+  genRecs.getDists(req.query, (results) => {
+    res.status(201).send(results);
+  });
 });
 
 app.listen(port, () => {
@@ -76,3 +84,4 @@ module.exports = {
 };
 
 require('../liveData/sessionData.js');
+require('../liveData/userData.js');

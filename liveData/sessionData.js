@@ -24,7 +24,7 @@ const cb = (err, res) => {
     console.error('Error making post request to sessiondata', err);
     return;
   }
-  log(res);
+  log(res.statusCode);
 };
 
-// setInterval(() => (request.post(options(), cb)), 1000);
+setInterval(() => (request.post(options(), cb)), 5000);
