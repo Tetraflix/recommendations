@@ -15,16 +15,35 @@ const app = express();
 const port = 3000;
 let logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
 logStream.size = 0;
+
 const log = (data) => {
-  const req = data;
-  req.date = new Date();
-  logStream.write(`${util.format(JSON.stringify(req))}\n`);
-  logStream.size += 1;
-  if (logStream.size > 100) {
-    logStream.end();
-    logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
-    logStream.size = 0;
+  const written = logStream.write(`${util.format(JSON.stringify(data))}\n`);
+  if (!written) {
+    logStream.once('drain', () => {
+      logStream.write(`${util.format(JSON.stringify(data))}\n`);
+    });
   }
+
+  // console.log(data);
+  // const req = data;
+  // req.date = new Date();
+  // // setImmediate(() => {
+  // //   logStream.write(`${util.format(JSON.stringify(req))}\n`, 'utf-8', () => {
+  // //     logStream.size += 1;
+  // //     if (logStream.size > 100) {
+  // //       logStream.end();
+  // //       logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
+  // //       logStream.size = 0;
+  // //     }
+  // //   });
+  // // });
+  // logStream.size += 1;
+  // logStream.write(`${util.format(JSON.stringify(req))}\n`);
+  // if (logStream.size > 100) {
+  //   logStream.end();
+  //   // logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
+  //   logStream.size = 0;
+  // }
 };
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -107,5 +126,5 @@ module.exports = {
   log,
 };
 
-require('../liveData/sessionData.js');
-require('../liveData/userData.js');
+// require('../liveData/sessionData.js');
+// require('../liveData/userData.js');

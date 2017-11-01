@@ -40,5 +40,6 @@ module.exports = {
     'comma-dangle': 1,
     'no-param-reassign': 1,
     'consistent-return': 1,
+    'no-underscore-dangle': 1,
   }
 };

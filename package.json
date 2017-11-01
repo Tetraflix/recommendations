@@ -31,13 +31,14 @@
     "express": "^4.16.2",
     "fs": "0.0.1-security",
     "mocha": "^4.0.1",
-    "node": "^8.3.0",
+    "node": "^8.9.0",
     "node-cron": "^1.2.1",
     "nodemon": "^1.12.1",
     "pg": "^7.3.0",
     "redis": "^2.8.0",
     "request": "^2.83.0",
     "sequelize": "^4.17.0",
+    "timsort": "^0.3.0",
     "util": "^0.10.3"
   }
 }
