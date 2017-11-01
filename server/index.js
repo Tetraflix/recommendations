@@ -48,17 +48,16 @@ SESSION DATA INPUT:
 }
 */
 app.post('/sessionData', (req, res) => {
-  log(req.body.userId || {});
+  log({ action: 'post request /sessionData' });
   if (!req.body.userId || !req.body.groupId || !req.body.recs || !req.body.nonRecs) {
     res.sendStatus(400);
   } else {
     sessionData(req.body)
       .then((results) => {
-        log(results);
         res.sendStatus(201);
       })
       .catch((err) => {
-        log(err);
+        log({ action: 'post request /userData', error: true });
         console.error('Error posting session data', err);
       });
   }
@@ -75,7 +74,7 @@ USER DATA INPUT:
 */
 app.post('/userData', (req, res) => {
   // generate recommendations & send back to requester (refactor to publish to message bus)
-  log(req.body.userId || {});
+  log({ action: 'post request /userData' });
   if (!req.body.userId || !req.body.profile || !req.body.movieHistory) {
     res.sendStatus(400);
   } else {

@@ -33,11 +33,11 @@ const options = () => ({
 
 const cb = (err, res) => {
   if (err) {
-    log(err);
+    log({ action: 'post response /userData', error: true });
     console.error('Error making post request to sessiondata', err);
     return;
   }
-  log(res.statusCode);
+  log({ action: 'post response /userData' });
 };
 
-cron.schedule('*/5 * * * * *', () => (request.post(options(), cb)));
+cron.schedule('*/3 * * * * *', () => (request.post(options(), cb)));
