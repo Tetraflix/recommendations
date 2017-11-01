@@ -19,12 +19,17 @@ const genProfile = () => {
   return profile;
 };
 
-module.exports = (i = 1) => (
+const genMovies = (i = 1) => (
   redisClient.delAsync(i)
     .then(() => (redisClient.lpushAsync(i, ...genProfile())))
     .then(() => {
       if (i < 300000) {
-        return module.exports(i + 1);
+        return genMovies(i + 1);
       }
     })
 );
+
+module.exports = {
+  genMovies,
+  genProfile,
+};

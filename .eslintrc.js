@@ -39,5 +39,6 @@ module.exports = {
     'import/no-unresolved': 1,
     'comma-dangle': 1,
     'no-param-reassign': 1,
+    'consistent-return': 1,
   }
 };

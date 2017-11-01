@@ -3,14 +3,14 @@ const es = require('../dashboard/dashboardData.js');
 
 let totalEvents;
 
-let createdAt = new Date('2017-08-05 15:37:42.997-07');
+let createdAt = new Date('2017-07-20 15:37:42.997-07');
 const incrementTime = date => (new Date(date.getTime() + 10000));
 
-const generateUser = () => {
-  const userId = Math.floor(Math.random() * (totalEvents / 10));
+const generateUser = (users, date) => {
+  const userId = Math.floor(Math.random() * (users));
   let min = 0.2;
   if (userId % 2) {
-    min = Math.min(0.7, ((createdAt - new Date('2017-07-20 15:37:42.997-07')) / 10000000000));
+    min = Math.min(0.7, ((date - new Date('2017-07-20 15:37:42.997-07')) / 10000000000));
   }
   let ratio = Math.random();
   while (ratio < min) {
@@ -20,7 +20,7 @@ const generateUser = () => {
     groupId: userId % 2,
     userId,
     ratio,
-    createdAt,
+    date,
   };
 };
 
@@ -28,7 +28,7 @@ const generateUsers = () => {
   const users = [[], []];
   for (let i = 1; i <= totalEvents; i += 1) {
     createdAt = incrementTime(createdAt);
-    const elem = generateUser();
+    const elem = generateUser((totalEvents / 10), createdAt);
     users[0].push(elem);
     users[1].push({
       index: {
@@ -54,7 +54,7 @@ const genDailyTotals = () => {
   return ratioDB.sequelize.query(queryString);
 };
 
-module.exports = (num = 1000000) => {
+const genData = (num = 1000000) => {
   totalEvents = !num ? 1000000 : num;
   const users = generateUsers();
   console.log('finished generating users', new Date());
@@ -67,4 +67,9 @@ module.exports = (num = 1000000) => {
     .catch((err) => {
       console.log('Error adding dummy data', err);
     });
+};
+
+module.exports = {
+  genData,
+  generateUser,
 };

@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Tetraflix/recommendations#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "elasticsearch": "^13.3.1",
@@ -31,6 +32,7 @@
     "fs": "0.0.1-security",
     "mocha": "^4.0.1",
     "node": "^8.3.0",
+    "node-cron": "^1.2.1",
     "nodemon": "^1.12.1",
     "pg": "^7.3.0",
     "redis": "^2.8.0",

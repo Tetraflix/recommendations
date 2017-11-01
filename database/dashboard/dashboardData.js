@@ -1,5 +1,4 @@
 const ElasticSearch = require('elasticsearch');
-const ratioDB = require('../ratios/index.js');
 
 const client = new ElasticSearch.Client({
   host: 'localhost:9200',
@@ -13,20 +12,13 @@ client.ping({ requestTimeout: 30000 }, (err) => {
   }
 });
 
-const addUser = (row) => {
-  row = JSON.parse(JSON.stringify(row));
+const addDoc = (index, type, body) => {
   const doc = {
-    index: 'user-ratios',
-    type: 'user-ratio',
-    id: row.id.toString(),
-    body: {
-      ratio: Number(row.ratio),
-      userId: row.userId,
-      groupId: row.groupId,
-      createdAt: row.createdAt,
-    }
+    index,
+    type,
+    body,
   };
-  return client.create(doc);
+  return client.index(doc);
 };
 
 const bulkAdd = arr => (
@@ -38,6 +30,6 @@ const bulkAdd = arr => (
 
 module.exports = {
   client,
-  addUser,
+  addDoc,
   bulkAdd,
 };
