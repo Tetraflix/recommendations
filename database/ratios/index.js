@@ -4,7 +4,12 @@ const credentials = require('./credentials.js');
 const sequelize = new Sequelize('ratios', credentials.username, credentials.password, {
   host: 'localhost',
   dialect: 'postgres',
-  logging: false
+  logging: false,
+  pool: {
+    max: 5,
+    min: 0,
+    idle: 10000,
+  },
 });
 
 sequelize.authenticate()
