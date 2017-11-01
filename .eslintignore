@@ -1,3 +1,4 @@
 public/dist/*
 server/views/*
 test/*
+genRecs.js

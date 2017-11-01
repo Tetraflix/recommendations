@@ -31,7 +31,7 @@ const options = () => ({
   body: genQuery(),
 });
 
-const cb = (err, res) => {
+const cb = (err) => {
   if (err) {
     log({ action: 'post response /userData', error: true });
     console.error('Error making post request to sessiondata', err);
@@ -40,4 +40,4 @@ const cb = (err, res) => {
   log({ action: 'post response /userData' });
 };
 
-cron.schedule('*/3 * * * * *', () => (request.post(options(), cb)));
+cron.schedule('*/2 * * * * *', () => (request.post(options(), cb)));

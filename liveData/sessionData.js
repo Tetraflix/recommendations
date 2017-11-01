@@ -20,7 +20,7 @@ const options = () => ({
   body: genQuery(),
 });
 
-const cb = (err, res) => {
+const cb = (err) => {
   if (err) {
     log({ action: 'post response /sessionData', error: true });
     console.error('Error making post request to sessiondata', err);
