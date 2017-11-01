@@ -29,4 +29,4 @@ const cb = (err) => {
   log({ action: 'post response /sessionData' });
 };
 
-cron.schedule('*/1 * * * * *', () => (request.post(options(), cb)));
+cron.schedule('*/3 * * * * *', () => (request.post(options(), cb)));

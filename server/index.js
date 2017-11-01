@@ -3,6 +3,7 @@ const path = require('path');
 const util = require('util');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const winston = require('winston');
 const seedData = require('../database/dummydata/seedData.js');
 const movieData = require('../database/dummydata/movieData.js');
 const genRecs = require('./genRecs.js');
@@ -13,37 +14,19 @@ require('../database/dashboard/dashboardData.js');
 
 const app = express();
 const port = 3000;
-let logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
+const logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
 logStream.size = 0;
 
-const log = (data) => {
-  const written = logStream.write(`${util.format(JSON.stringify(data))}\n`);
-  if (!written) {
-    logStream.once('drain', () => {
-      logStream.write(`${util.format(JSON.stringify(data))}\n`);
-    });
-  }
+const logger = winston.createLogger({
+  level: 'info',
+  transports: [new winston.transports.File({ filename: 'log.log' })]
+});
 
-  // console.log(data);
-  // const req = data;
-  // req.date = new Date();
-  // // setImmediate(() => {
-  // //   logStream.write(`${util.format(JSON.stringify(req))}\n`, 'utf-8', () => {
-  // //     logStream.size += 1;
-  // //     if (logStream.size > 100) {
-  // //       logStream.end();
-  // //       logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
-  // //       logStream.size = 0;
-  // //     }
-  // //   });
-  // // });
-  // logStream.size += 1;
-  // logStream.write(`${util.format(JSON.stringify(req))}\n`);
-  // if (logStream.size > 100) {
-  //   logStream.end();
-  //   // logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
-  //   logStream.size = 0;
-  // }
+const log = (data) => {
+  logger.log({
+    level: 'info',
+    message: data,
+  });
 };
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -126,5 +109,5 @@ module.exports = {
   log,
 };
 
-// require('../liveData/sessionData.js');
-// require('../liveData/userData.js');
+require('../liveData/sessionData.js');
+require('../liveData/userData.js');
