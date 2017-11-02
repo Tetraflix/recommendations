@@ -87,7 +87,7 @@ logstash.conf format for the recommendations server:
 ```
 input {
   file {
-    path => [PATH/TO/LOGS]/*.log]
+    path => "[PATH/TO/LOGS]/*.log"
   }
   stdin { }
 }
@@ -113,7 +113,7 @@ User testing group, session ID, user ID, total recommended movies watched during
 
 ```
 {
-  userId: 534356757834,
+  userId: 5783,
   groupId: 1,
   recs: 1.0,
   nonRecs: 0.7
@@ -125,10 +125,9 @@ User ID, list of already watched movie IDs, updated genre preferences
 
 ```
 {
-  userId: 534356757834,
-  profile: {action: 33, comedy: 20, drama: 44, romance: 33,
-  SF: 2, ...},
-  movieHistory: [543, 155, ...]
+  userId: 5783,
+  profile: [4, 4, 15, 2, 0, 6, 16, 2, 13, 18, 6, 4, 5, 1, 4],
+  movieHistory: {543:1, 155:1, 1234:1, 2345:1, ...}
 }
 ```
 
@@ -142,7 +141,7 @@ User ID, list of recommended movie IDs
 
 ```
 {
-  userId: 534356757834,
-  rec: [23, 105, 765, 32, 479]
+  userId: 5783,
+  rec: [23879, 16605, 7695, 37892, 479, ...]
 }
 ```
