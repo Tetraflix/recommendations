@@ -42,4 +42,4 @@ bower_components/
 config/
 
 # Credentials
-credentials.js
+credentials/

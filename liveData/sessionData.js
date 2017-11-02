@@ -1,7 +1,6 @@
 const request = require('request');
 const cron = require('node-cron');
-const { port } = require('../server/index.js');
-const { log } = require('../server/index.js');
+const app = require('../server/index.js');
 const { generateUser } = require('../database/dummyData/seedData.js');
 
 const genQuery = () => {
@@ -13,20 +12,16 @@ const genQuery = () => {
   return initialObj;
 };
 
-// make post request to /sessionData
-const options = () => ({
-  url: `http://localhost:${port}/sessionData`,
-  json: true,
-  body: genQuery(),
+const genOptions = () => ({
+  MessageBody: JSON.stringify(genQuery()),
+  QueueUrl: app.queues.session,
+  MessageGroupId: 'session',
 });
 
-const cb = (err) => {
-  if (err) {
-    log({ action: 'post response /sessionData', error: true });
-    console.error('Error making post request to sessiondata', err);
-    return;
-  }
-  log({ action: 'post response /sessionData' });
+const sendMsg = (options) => {
+  app.sendMessages(options)
+    .then(() => app.log({ action: 'request sessiondata' }))
+    .catch(() => app.log({ action: 'request sessiondata', error: true }));
 };
 
-cron.schedule('*/1 * * * * *', () => (request.post(options(), cb)));
+cron.schedule('*/2 * * * * *', () => (sendMsg(genOptions())));
