@@ -28,11 +28,8 @@ const getDists = (userData, cb) => {
       }
       distances.push([i, eucDist(userData.profile, res)]);
       if (i === 300000) {
-        timsort.sort(distances, (a, b) => (a[1] - b[1]))
+        timsort.sort(distances, (a, b) => (a[1] - b[1]));
         cb(distances.slice(0, 20).map(movie => (movie[0])));
-        // cb(distances.sort((a, b) => (a[1] - b[1]))
-        //   .slice(0, 20)
-        //   .map(movie => (movie[0])));
       }
     });
   }
