@@ -4,6 +4,7 @@ const util = require('util');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const winston = require('winston');
+const rotator = require('stream-rotate');
 const seedData = require('../database/dummydata/seedData.js');
 const movieData = require('../database/dummydata/movieData.js');
 const genRecs = require('./genRecs.js');
@@ -14,12 +15,15 @@ require('../database/dashboard/dashboardData.js');
 
 const app = express();
 const port = 3000;
-const logStream = fs.createWriteStream(path.resolve(__dirname, '../log.log'));
-logStream.size = 0;
+const logStream = rotator({
+  path: path.resolve(__dirname, '../logs'),
+  name: 'log',
+  freq: '1h',
+});
 
 const logger = winston.createLogger({
   level: 'info',
-  transports: [new winston.transports.File({ filename: 'log.log' })]
+  transports: [new winston.transports.File({ stream: logStream })],
 });
 
 const log = (data) => {
