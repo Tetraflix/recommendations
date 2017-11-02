@@ -40,4 +40,4 @@ const cb = (err) => {
   log({ action: 'post response /userData' });
 };
 
-cron.schedule('*/2 * * * * *', () => (request.post(options(), cb)));
+cron.schedule('*/3 * * * * *', () => (request.post(options(), cb)));
