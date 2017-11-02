@@ -78,7 +78,26 @@ Coming soon...
 
 #### Logstash
 
-Coming soon...
+Logstash is configured to pull logs from files that end in ".log" inside the "logs" directory. The actual logging of processed server requests is done using the modules Winston (for logging) and stream-rotate (to prevent memory overload). Currently, these modules are used in conjunction to monitor server performance, keeping track of requests, responses, and errors.
+
+[Elastic's official Getting Started with Logstash guide](https://www.elastic.co/guide/en/logstash/current/getting-started-with-logstash.html) outlines the basic process of configuring Logstash.
+
+logstash.conf format for the recommendations server:
+(Replace the bracketed fields ```[PATH/TO/LOGS]``` with the file path to your .log files and ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch instance is running.)
+```
+input {
+  file {
+    path => [PATH/TO/LOGS]/*.log]
+  }
+  stdin { }
+}
+output {
+  elasticsearch {
+    hosts => ["localhost:[ELASTICSEARCH PORT]"]
+  }
+  stdout { codec => rubydebug }
+}
+```
 
 ## System Architecture
 ![System Architecture](https://github.com/Tetraflix/recommendations/blob/development/images/architecture.png)
