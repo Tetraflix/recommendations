@@ -17,7 +17,7 @@ const eucDist = (p, q) => {
   return sqDiffs.reduce((a, b) => (a + b));
 };
 
-const getDists = (userData, cb) => (
+const getDists = (userData) => (
   new Promise ((resolve, reject) => {
     userData.profile = Array.isArray(userData.profile) ? userData.profile : JSON.parse(userData.profile);
     const distances = [];

@@ -156,6 +156,7 @@ module.exports = {
   app,
   port,
   log,
+  sqs,
   queues,
   sendMessages,
 };
