@@ -108,7 +108,8 @@ const receiveSessionData = () => {
       log({ action: 'response sessiondata', error: true });
     });
 };
-cron.schedule('*/2 * * * * *', receiveSessionData);
+cron.schedule('*/1 * * * * *', receiveSessionData);
+cron.schedule('*/1 * * * * *', receiveSessionData);
 
 const receiveUserData = () => {
   let deleteId;
@@ -144,7 +145,8 @@ const receiveUserData = () => {
       log({ action: 'response userdata', error: true });
     });
 };
-cron.schedule('*/2 * * * * *', receiveUserData);
+cron.schedule('*/1 * * * * *', receiveUserData);
+cron.schedule('*/1 * * * * *', receiveUserData);
 
 app.listen(port, () => {
   console.log(`App is listening on Port ${port}!`);

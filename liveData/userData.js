@@ -1,4 +1,3 @@
-const request = require('request');
 const cron = require('node-cron');
 const app = require('../server/index.js');
 const { genProfile } = require('../database/dummyData/movieData.js');
