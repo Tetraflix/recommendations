@@ -17,23 +17,26 @@ const eucDist = (p, q) => {
   return sqDiffs.reduce((a, b) => (a + b));
 };
 
-const getDists = (userData, cb) => {
-  userData.profile = Array.isArray(userData.profile) ? userData.profile : JSON.parse(userData.profile);
-  const distances = [];
-  for (let i = 1; i <= 300000; i++) {
-    redisClient.lrange(i, 0, -1, (err, res) => {
-      if (err) {
-        console.error('Error finding distance between user data and movie data', err);
-        return;
-      }
-      distances.push([i, eucDist(userData.profile, res)]);
-      if (i === 300000) {
-        timsort.sort(distances, (a, b) => (a[1] - b[1]));
-        cb(distances.slice(0, 20).map(movie => (movie[0])));
-      }
-    });
-  }
-};
+const getDists = (userData) => (
+  new Promise ((resolve, reject) => {
+    userData.profile = Array.isArray(userData.profile) ? userData.profile : JSON.parse(userData.profile);
+    const distances = [];
+    for (let i = 1; i <= 300000; i++) {
+      redisClient.lrange(i, 0, -1, (err, res) => {
+        if (err) {
+          console.error('Error finding distance between user data and movie data', err);
+          reject(error);
+        } else {
+          distances.push([i, eucDist(userData.profile, res)]);
+          if (i === 300000) {
+            timsort.sort(distances, (a, b) => (a[1] - b[1]));
+            resolve(distances.slice(0, 20).map(movie => (movie[0])));
+          }
+        }
+      });
+    }
+  })
+);
 
 module.exports = {
   getDists,

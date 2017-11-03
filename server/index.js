@@ -1,10 +1,9 @@
 const express = require('express');
+const AWS = require('aws-sdk');
 const path = require('path');
-const util = require('util');
-const fs = require('fs');
-const bodyParser = require('body-parser');
 const winston = require('winston');
 const rotator = require('stream-rotate');
+const cron = require('node-cron');
 const seedData = require('../database/dummydata/seedData.js');
 const movieData = require('../database/dummydata/movieData.js');
 const genRecs = require('./genRecs.js');
@@ -15,6 +14,15 @@ require('../database/dashboard/dashboardData.js');
 
 const app = express();
 const port = 3000;
+AWS.config.loadFromPath(path.resolve(__dirname, '../credentials/aws.json'));
+const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
+
+const queues = {
+  session: 'https://sqs.us-east-2.amazonaws.com/938669920909/tetraflix-session-data.fifo',
+  recommendations: 'https://sqs.us-east-2.amazonaws.com/938669920909/tetraflix-recommendations-data.fifo',
+  user: 'https://sqs.us-east-2.amazonaws.com/938669920909/tetraflix-user-data.fifo',
+};
+
 const logStream = rotator({
   path: path.resolve(__dirname, '../logs'),
   name: 'log',
@@ -33,9 +41,6 @@ const log = (data) => {
   });
 };
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 app.post('/dummydata', (req, res) => {
   seedData.genData(Number(req.query.entries))
     .then(() => {
@@ -50,58 +55,98 @@ app.post('/moviedata', (req, res) => {
     .catch(err => console.error('Error posting dummy movie data', err));
 });
 
-/*
-SESSION DATA INPUT:
-{
-  userId: 534356757834,
-  groupId: 1,
-  recs: 1.0,
-  nonRecs: 0.7
-}
-*/
-app.post('/sessionData', (req, res) => {
-  log({ action: 'post request /sessionData' });
-  req.on('error', () => {
-    log({ action: 'post request /sessionData', error: true });
-  });
-  if (!req.body.userId || !req.body.groupId || !req.body.recs || !req.body.nonRecs) {
-    res.sendStatus(400);
-  } else {
-    sessionData(req.body)
-      .then(() => {
-        res.sendStatus(201);
-      })
-      .catch((err) => {
-        log({ action: 'post request /userData', error: true });
-        console.error('Error posting session data', err);
-      });
-  }
-});
-
-
-/*
-USER DATA INPUT:
-{
-  userId: 5783,
-  profile: [4, 4, 15, 2, 0, 6, 16, 2, 13, 18, 6, 4, 5, 1, 4],
-  movieHistory: {543:1, 155:1, 1234:1, 2345:1, 267563:1, 103234:1,
-  456:1, 23423:1, 78654:1, 1234:1, 2345:1, 64546:1, 87654:1, 235734:1, 298765:1}
-}
-*/
-app.post('/userData', (req, res) => {
-  // generate recommendations & send back to requester (refactor to publish to message bus)
-  log({ action: 'post request /userData' });
-  req.on('error', () => {
-    log({ action: 'post request /userData', error: true });
-  });
-  if (!req.body.userId || !req.body.profile || !req.body.movieHistory) {
-    res.sendStatus(400);
-  } else {
-    genRecs.getDists(req.body, (results) => {
-      res.status(201).send(results);
+const receiveMessages = options => (
+  new Promise((resolve, reject) => {
+    sqs.receiveMessage(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
     });
-  }
-});
+  })
+);
+
+const deleteMessage = options => (
+  new Promise((resolve, reject) => {
+    sqs.deleteMessage(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  })
+);
+
+const sendMessages = options => (
+  new Promise((resolve, reject) => {
+    sqs.sendMessage(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  })
+);
+
+const receiveSessionData = () => {
+  let deleteId;
+  const sessionOptions = {
+    QueueUrl: queues.session,
+    AttributeNames: ['All'],
+  };
+  receiveMessages(sessionOptions)
+    .then((data) => {
+      if (!data.Messages || !data.Messages[0]) {
+        throw new Error('No Messages to Receive');
+      }
+      deleteId = data.Messages[0].ReceiptHandle;
+      return sessionData(JSON.parse(data.Messages[0].Body));
+    })
+    .then(() => {
+      log({ action: 'response sessiondata' });
+      const deleteOptions = {
+        QueueUrl: queues.session,
+        ReceiptHandle: deleteId,
+      };
+      return deleteMessage(deleteOptions);
+    })
+    .catch(() => {
+      log({ action: 'response sessiondata', error: true });
+    });
+};
+cron.schedule('*/1 * * * * *', receiveSessionData);
+cron.schedule('*/1 * * * * *', receiveSessionData);
+
+const receiveUserData = () => {
+  let deleteId;
+  const userOptions = {
+    QueueUrl: queues.user,
+    AttributeNames: ['All'],
+  };
+  receiveMessages(userOptions)
+    .then((data) => {
+      if (!data.Messages || !data.Messages[0]) {
+        throw new Error('No Messages to Receive');
+      }
+      deleteId = data.Messages[0].ReceiptHandle;
+      return genRecs.getDists(JSON.parse(data.Messages[0].Body));
+    })
+    .then((recs) => {
+      const recOptions = {
+        MessageBody: JSON.stringify(recs),
+        QueueUrl: queues.recommendations,
+        MessageGroupId: 'recommendations',
+      };
+      return sendMessages(recOptions);
+    })
+    .then(() => {
+      log({ action: 'response userdata' });
+      const deleteOptions = {
+        QueueUrl: queues.user,
+        ReceiptHandle: deleteId,
+      };
+      return deleteMessage(deleteOptions);
+    })
+    .catch(() => {
+      log({ action: 'response userdata', error: true });
+    });
+};
+cron.schedule('*/1 * * * * *', receiveUserData);
+cron.schedule('*/1 * * * * *', receiveUserData);
 
 app.listen(port, () => {
   console.log(`App is listening on Port ${port}!`);
@@ -111,6 +156,9 @@ module.exports = {
   app,
   port,
   log,
+  sqs,
+  queues,
+  sendMessages,
 };
 
 require('../liveData/sessionData.js');

@@ -66,8 +66,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Elasticsearch Configuration
 
-Coming soon...
-
 #### Elasticsearch
 
 Coming soon...
