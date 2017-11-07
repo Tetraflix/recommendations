@@ -29,6 +29,7 @@ coverage
 # Docker
 .dockerignore
 Dockerfile
+*.yml
 
 # Compiled Dirs (http://nodejs.org/api/addons.html)
 build/

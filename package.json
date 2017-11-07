@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "nodemon --inspect server/index.js",
-    "redis": "redis-server",
-    "pg": ""
+    "nodemon": "nodemon --inspect server/index.js",
+    "start": "node server/index.js",
+    "redis": "redis-server"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,6 @@
     "nodemon": "^1.12.1",
     "pg": "^7.3.0",
     "redis": "^2.8.0",
-    "request": "^2.83.0",
     "sequelize": "^4.17.0",
     "stream-rotate": "^0.1.0",
     "timsort": "^0.3.0",
