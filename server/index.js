@@ -14,10 +14,6 @@ require('../database/dashboard/dashboardData');
 
 const app = express();
 const port = 3000;
-const hosts = {
-  redis: 'redis',
-  postgres: 'postgres',
-};
 AWS.config.loadFromPath(path.resolve(__dirname, '../credentials/aws.json'));
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
@@ -163,7 +159,6 @@ module.exports = {
   sqs,
   queues,
   sendMessages,
-  hosts,
 };
 
 require('../liveData/sessionData.js');

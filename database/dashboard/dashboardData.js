@@ -1,7 +1,10 @@
 const ElasticSearch = require('elasticsearch');
 
 const client = new ElasticSearch.Client({
-  host: 'localhost:9200',
+  host: {
+    host: 'localhost',
+    port: '9200',
+  },
 });
 
 client.ping({ requestTimeout: 30000 }, (err) => {

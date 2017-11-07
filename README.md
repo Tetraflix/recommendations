@@ -51,20 +51,22 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Docker Configuration
 
-To run the application, redis database, and postgres database on Docker, define the hosts variable in server/index.js like so:
+To run the application, redis database, and postgres database on Docker, define the host variable in database/movies/index.js like so:
 ```
-const hosts = {
-  redis: 'redis',
-  postgres: 'postgres',
-};
+const host = 'redis',
+```
+And define the host variable in database/ratios/index.js like so:
+```
+const host = 'postgres',
 ```
 
-To run the application on your local machine (with separate running instances of redis and postgres on your local machine), define the hosts variable in server/index.js like so:
+To run the application on your local machine (with separate running instances of redis and postgres on your local machine), define the host variable in database/movies/index.js like so:
 ```
-const hosts = {
-  redis: 'localhost',
-  postgres: 'localhost',
-};
+const host = 'localhost',
+```
+And define the host variable in database/ratios/index.js like so:
+```
+const host = 'localhost',
 ```
 
 The two databases are configured to rely on this assignment in the main server file to facilitate developer changes. If you choose to run this application in Docker, configure your [Dockerfile](https://docs.docker.com/engine/reference/builder/) like so, making sure that the number following 'EXPOSE' is the port that you are running your application on (if you choose to change this value in server/index.js):
