@@ -1,12 +1,11 @@
-FROM node:boron
+FROM node:9.0
 
-WORKDIR /Users/shweta/documents/hr/recommendations
+WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
 
-RUN npm install sudo
+RUN npm install
 
 COPY . .
 
 EXPOSE 3000
-CMD [ "npm", "start" ]

@@ -1,6 +1,14 @@
 # Recommendations Service
 
-The project description
+## The Business Question:
+Among users who don’t leave ratings, do recommendations based on modeled user genre preferences outperform recommendations based on fixed genre preferences?
+  - KPI: total ratio of recommended movies watched to total movies watched per test group per day
+  - “Fixed genre preferences” refer to genre preferences set by a user upon signup
+  - Control Group: Group whose recommendations are generated from initially fixed genre preferences
+  - Experimental: Group whose recommendations are generated from continually updated user genre preferences
+
+
+The Recommendations service's role in answering this business question in conjunction with three more API services is to feed updated user genre preferences into an algorithm that matches the user with movies that have similar genre breakdowns. This data is then sent to the App Server to be presented to the client.
 
 ## Roadmap
 
@@ -20,37 +28,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ## Data Flow:
 ![Data Flow](https://github.com/Tetraflix/recommendations/blob/development/images/data-flow.jpeg)
-
-1. App Server
-  - Serves recommended movies for a user and movies searched by genre to the client when the client makes GET requests to the /recommendations and /:genre endpoints.
-
-2. Events
-  - Receives information from the client about click events associated with active sessions. There will be many different concurrent sessions for many different users, and many clicks associated with each.
-  - Whenever an individual user session ends, as indicated by a triggering event, the Events server filters the ended session’s events from its database and interprets/packages the information about that user’s activity during their session (more detail in Events Documentation) to send to three channels on the message bus.
-  - The Events service persists data about a completed user session.
-
-3. User Profiles
-  - Subscribed to one of the three Session Data channels (more detail on expected inputs in User Profiles Documentation).
-  - Updates the user’s history of movies watched in the database.
-  - If the user associated with the Session is in the Experimental group, updates user profile using the list of historical movies user has watched.  User profile modeling will be based on exponentially weighted moving average (EXMA) of movie profiles to take into consideration content drift of user preference.
-  - Sends the user’s current profile data (regardless of testing group) to the User Profile Data channel on the message bus.
-
-4. Recommendations
-  - Subscribed to one of the three Session Data channels (more detail on expected inputs in Recommendations Documentation).
-  - Stores session data in the form of ratios to visualize answer to business question:
+#### Recommendations
+  - Subscribed to one of the three Session Data channels (more detail on expected inputs in the [Inputs/Outputs](#inputs-and-outputs) section).
+  - Stores session data in the form of ratios to visualize answer to business question.
   - Stores ratio of recommended movies watched to total movies watched per session in one database table.
   - Stores total average ratio of recommended movies watched to total movies watched in another database table.
   - Subscribed to User Profile Data channel on the message bus.
   - Feeds updated user genre preferences into a simple comparison algorithm that matches the user with movies that have similar genre breakdowns
   - Finds movies with similar genre breakdowns by calculating the euclidean distance between the vector representation of the user genre preferences and vector representations for movies that the user has not watched
-
-5. App Server
-  - Subscribed to one of the three Session Data channels (more detail on expected inputs in App Server Documentation).
-  - Using Session Data, updates “Currently Watching” field for the corresponding user to include most recent session data on movies in progress.
-  - Using Session Data, updates cached total view counts in database for movies watched during the session.
-  - Subscribed to Current Recommendations channel on the message bus.
-  - Updates corresponding user’s current recommended movies list by matching the input movie IDs with its movie storage database, and stores this information in cached field in a speed-optimized database.
-  - The server will now send the client different information when the user starts a new session.
 
 
 ## Requirements
@@ -64,7 +49,68 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ## Usage
 
-### Elasticsearch Configuration
+### Docker Configuration
+
+To run the application, redis database, and postgres database on Docker, define the hosts variable in server/index.js like so:
+```
+const hosts = {
+  redis: 'redis',
+  postgres: 'postgres',
+};
+```
+
+To run the application on your local machine (with separate running instances of redis and postgres on your local machine), define the hosts variable in server/index.js like so:
+```
+const hosts = {
+  redis: 'localhost',
+  postgres: 'localhost',
+};
+```
+
+The two databases are configured to rely on this assignment in the main server file to facilitate developer changes. If you choose to run this application in Docker, configure your [Dockerfile](https://docs.docker.com/engine/reference/builder/) like so, making sure that the number following 'EXPOSE' is the port that you are running your application on (if you choose to change this value in server/index.js):
+```
+FROM node:9.0
+
+WORKDIR /usr/src/app
+
+COPY package.json package-lock.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+```
+This application makes use of [docker-compose](https://docs.docker.com/compose/) to load and run linked images. If you are on a Linux machine, make sure to download docker-compose alongside Docker. To load the database dependencies, configure your docker-compose.yml file in the same directory like so:
+(Replace the bracketed fields ```[POSTGRES PASSWORD]``` and ```[POSTGRES USER]``` with your postgres credentials. You may also need to modify the "ports" property under "web" based on the port you exposed in your Dockerfile and/or on the port you wish to run the application on. This Dockerfile keeps the redis and postgres database ports as their default values.)
+```
+version: '2'
+services:
+  redis:
+    image: "redis:3"
+  postgres:
+    image: "postgres:10"
+    environment:
+     POSTGRES_PASSWORD: [POSTGRES PASSWORD]
+     POSTGRES_USER: [POSTGRES USER]
+     POSTGRES_DB: "ratios"
+  web:
+    build: .
+    ports:
+     - "3000:3000"
+    volumes:
+     - .:/usr/src/app
+     - /usr/src/app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    command: ["npm", "start"]
+```
+
+To load all images and start running the application, use the command ```docker-compose up``` from the same directory. For more information on getting started with Docker and Docker-compose, see the [official Docker documentation](https://docs.docker.com/get-started/).
+
+### Elasticsearch Configuration (without Docker)
+The following information is not incorporated with the Docker-contained version of the application, since Docker is used here primarily as a tool to maintain proper environment variables for the purposes of deployment. Because this application is deployed as an EC2 instance on AWS, which has access to elasticsearch, elasticsearch is not necessary to include in the docker-ized version of the application. This means, however, that elasticsearch must still be configured manually if the application is run on your local machine.
 
 #### Elasticsearch
 
@@ -95,6 +141,13 @@ output {
   }
   stdout { codec => rubydebug }
 }
+```
+
+The format of the Winston-logged system events looks like this:
+```
+{"level":"info","message":{"action":"response userdata","error":true}}
+{"level":"info","message":{"action":"request sessiondata"}}
+. . .
 ```
 
 ## System Architecture

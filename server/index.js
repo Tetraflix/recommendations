@@ -4,16 +4,20 @@ const path = require('path');
 const winston = require('winston');
 const rotator = require('stream-rotate');
 const cron = require('node-cron');
-const seedData = require('../database/dummydata/seedData.js');
-const movieData = require('../database/dummydata/movieData.js');
-const genRecs = require('./genRecs.js');
-const sessionData = require('./sessionData.js');
-require('../database/movies/index.js');
-require('../database/ratios/index.js');
-require('../database/dashboard/dashboardData.js');
+const seedData = require('../database/dummyData/seedData');
+const movieData = require('../database/dummyData/movieData');
+const genRecs = require('./genRecs');
+const sessionData = require('./sessionData');
+require('../database/movies/index');
+require('../database/ratios/index');
+require('../database/dashboard/dashboardData');
 
 const app = express();
 const port = 3000;
+const hosts = {
+  redis: 'redis',
+  postgres: 'postgres',
+};
 AWS.config.loadFromPath(path.resolve(__dirname, '../credentials/aws.json'));
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
@@ -159,6 +163,7 @@ module.exports = {
   sqs,
   queues,
   sendMessages,
+  hosts,
 };
 
 require('../liveData/sessionData.js');

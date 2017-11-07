@@ -27,7 +27,6 @@ const bulkAdd = arr => (
   })
 );
 
-
 module.exports = {
   client,
   addDoc,
