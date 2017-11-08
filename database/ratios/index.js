@@ -1,9 +1,10 @@
 const Sequelize = require('sequelize');
 const credentials = require('../../credentials/postgres.js');
-const { hosts } = require('../../server/index.js');
+
+const host = 'postgres';
 
 const sequelize = new Sequelize('ratios', credentials.username, credentials.password, {
-  host: hosts.postgres,
+  host,
   dialect: 'postgres',
   logging: false,
   pool: {
