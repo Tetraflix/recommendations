@@ -3,10 +3,10 @@ const app = require('../server/index.js');
 const { genProfile } = require('../database/dummyData/movieData.js');
 
 const genQuery = () => {
-  const movieHistory = [];
+  const movieHistory = {};
   const moviesWatched = Math.random() * 5000;
-  while (movieHistory.length < moviesWatched) {
-    movieHistory.push(Math.floor(Math.random() * 300000));
+  while (Object.keys(movieHistory).length < moviesWatched) {
+    movieHistory[Math.floor(Math.random() * 300000)] = 1;
   }
   return {
     userId: Math.floor(Math.random() * 1000000),
@@ -27,4 +27,4 @@ const sendMsg = (options) => {
     .catch(() => app.log({ action: 'request userdata', error: true }));
 };
 
-cron.schedule('*/4 * * * * *', () => (sendMsg(genOptions())));
+cron.schedule('*/1 * * * * *', () => (sendMsg(genOptions())));

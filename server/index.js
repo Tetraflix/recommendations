@@ -82,6 +82,24 @@ const sendMessages = options => (
   })
 );
 
+const sendMessageBatch = options => (
+  new Promise((resolve, reject) => {
+    sqs.sendMessageBatch(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  })
+);
+
+const deleteBatch = options => (
+  new Promise((resolve, reject) => {
+    sqs.deleteMessageBatch(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  })
+);
+
 const receiveSessionData = () => {
   let deleteId;
   const sessionOptions = {
@@ -116,30 +134,35 @@ const receiveUserData = () => {
   const userOptions = {
     QueueUrl: queues.user,
     AttributeNames: ['All'],
+    MaxNumberOfMessages: 3,
   };
   receiveMessages(userOptions)
     .then((data) => {
       if (!data.Messages || !data.Messages[0]) {
         throw new Error('No Messages to Receive');
       }
-      deleteId = data.Messages[0].ReceiptHandle;
-      return genRecs.getDists(JSON.parse(data.Messages[0].Body));
+      deleteId = data.Messages.map(msg => msg.ReceiptHandle);
+      console.log('req made', data.Messages.length);
+      return genRecs.getDists(data.Messages);
+      // deleteId = data.Messages[0].ReceiptHandle;
+      // return genRecs.getDists(JSON.parse(data.Messages[0].Body));
     })
     .then((recs) => {
-      const recOptions = {
-        MessageBody: JSON.stringify(recs),
-        QueueUrl: queues.recommendations,
-        MessageGroupId: 'recommendations',
-      };
-      return sendMessages(recOptions);
+      // const recOptions = {
+      //   MessageBody: JSON.stringify(recs),
+      //   QueueUrl: queues.recommendations,
+      //   MessageGroupId: 'recommendations',
+      // };
+      // return sendMessageBatch(recOptions);
+      console.log(recs);
     })
     .then(() => {
-      log({ action: 'response userdata' });
-      const deleteOptions = {
-        QueueUrl: queues.user,
-        ReceiptHandle: deleteId,
-      };
-      return deleteMessage(deleteOptions);
+      // log({ action: 'response userdata' });
+      // const deleteOptions = {
+      //   QueueUrl: queues.user,
+      //   ReceiptHandle: deleteId,
+      // };
+      // return deleteMessage(deleteOptions);
     })
     .catch(() => {
       log({ action: 'response userdata', error: true });
