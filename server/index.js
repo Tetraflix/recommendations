@@ -127,48 +127,41 @@ const receiveSessionData = () => {
     });
 };
 cron.schedule('*/1 * * * * *', receiveSessionData);
-cron.schedule('*/1 * * * * *', receiveSessionData);
 
 const receiveUserData = () => {
-  let deleteId;
+  let data;
   const userOptions = {
     QueueUrl: queues.user,
     AttributeNames: ['All'],
-    MaxNumberOfMessages: 3,
+    MaxNumberOfMessages: 10,
   };
   receiveMessages(userOptions)
-    .then((data) => {
+    .then((body) => {
+      data = body;
       if (!data.Messages || !data.Messages[0]) {
         throw new Error('No Messages to Receive');
       }
-      deleteId = data.Messages.map(msg => msg.ReceiptHandle);
-      console.log('req made', data.Messages.length);
-      return genRecs.getDists(data.Messages);
-      // deleteId = data.Messages[0].ReceiptHandle;
-      // return genRecs.getDists(JSON.parse(data.Messages[0].Body));
+      const deleteId = data.Messages.map((msg, index) => (
+        { Id: index.toString(), ReceiptHandle: msg.ReceiptHandle }
+      ));
+      const options = {
+        Entries: deleteId,
+        QueueUrl: queues.user,
+      };
+      return deleteBatch(options);
     })
+    .then(() => genRecs.getDists(data.Messages))
     .then((recs) => {
-      // const recOptions = {
-      //   MessageBody: JSON.stringify(recs),
-      //   QueueUrl: queues.recommendations,
-      //   MessageGroupId: 'recommendations',
-      // };
-      // return sendMessageBatch(recOptions);
-      console.log(recs);
+      const options = {
+        Entries: recs,
+        QueueUrl: queues.recommendations,
+      };
+      return sendMessageBatch(options);
     })
-    .then(() => {
-      // log({ action: 'response userdata' });
-      // const deleteOptions = {
-      //   QueueUrl: queues.user,
-      //   ReceiptHandle: deleteId,
-      // };
-      // return deleteMessage(deleteOptions);
-    })
-    .catch(() => {
+    .catch((err) => {
       log({ action: 'response userdata', error: true });
     });
 };
-cron.schedule('*/1 * * * * *', receiveUserData);
 cron.schedule('*/1 * * * * *', receiveUserData);
 
 app.listen(port, () => {

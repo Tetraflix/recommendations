@@ -27,4 +27,4 @@ const sendMsg = (options) => {
     .catch(() => app.log({ action: 'request userdata', error: true }));
 };
 
-cron.schedule('*/1 * * * * *', () => (sendMsg(genOptions())));
+cron.schedule('*/3 * * * * *', () => (sendMsg(genOptions())));
