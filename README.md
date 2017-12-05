@@ -116,7 +116,29 @@ The following information is not incorporated with the Docker-contained version 
 
 #### Elasticsearch
 
-Coming soon...
+The sessions database is integrated with Elasticsearch such that every message processed in inserted into the PostgreSQL database is also sent for analytical purposes to the Elasticsearch client. [Elastic's Official Getting Started with ElasticSearch Guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html) outlines installation and configuration.
+
+The client is set up like so in database/dashboard/dashboardData.js:
+(Replace the bracketed field ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch instance is running. Elasticsearch is set to run on port 9200 by default.)
+
+```
+const ElasticSearch = require('elasticsearch');
+
+const client = new ElasticSearch.Client({
+  host: {
+    host: '127.0.0.1',
+    port: '[ELASTICSEARCH PORT]',
+  },
+});
+
+client.ping({ requestTimeout: 30000 }, (err) => {
+  if (err) {
+    console.error('elasticsearch cluster is down', err);
+  } else {
+    console.log('All is well with elasticsearch!');
+  }
+});
+```
 
 #### Kibana
 
@@ -129,7 +151,7 @@ Logstash is configured to pull logs from files that end in ".log" inside the "lo
 [Elastic's official Getting Started with Logstash guide](https://www.elastic.co/guide/en/logstash/current/getting-started-with-logstash.html) outlines the basic process of configuring Logstash.
 
 logstash.conf format for the recommendations server:
-(Replace the bracketed fields ```[PATH/TO/LOGS]``` with the file path to your .log files and ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch instance is running.)
+(Replace the bracketed fields ```[PATH/TO/LOGS]``` with the file path to your .log files and ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch (9200 by default) instance is running.)
 ```
 input {
   file {
