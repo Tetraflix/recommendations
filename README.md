@@ -140,6 +140,8 @@ client.ping({ requestTimeout: 30000 }, (err) => {
 });
 ```
 
+To run the elasticsearch instance on your local machine, run ``` bin/elasticsearch ``` from within the downloaded elasticsearch directory.
+
 #### Kibana
 
 The Kibana server is configured to display data sent to the Elasticsearch client either manually or through Logstash (see section below for Logstash configuration details). For installation and set up, refer to [Elastic's official Getting Started with Kibana Guide](https://www.elastic.co/guide/en/kibana/current/reporting-getting-started.html).
@@ -153,6 +155,8 @@ The Kibana dashboard designed for the recommendations microservice displays data
 
 An example visualization with the existing data generation scripts is provided in this screenshot:
 ![Data Flow](https://github.com/Tetraflix/recommendations/blob/development/images/kibanaExample.png)
+
+To run the kibana instance on your local machine, run ``` bin/kibana ``` from within the downloaded kibana directory.
 
 #### Logstash
 
@@ -183,6 +187,8 @@ The format of the Winston-logged system events looks like this:
 {"level":"info","message":{"action":"request sessiondata"}}
 . . .
 ```
+
+To run the logstash instance on your local machine, run ``` bin/logstash -f logstash.conf ``` (to run logstash using your custom configuration file) from within the downloaded logstash directory.
 
 ## System Architecture
 ![System Architecture](https://github.com/Tetraflix/recommendations/blob/development/images/architecture.png)
