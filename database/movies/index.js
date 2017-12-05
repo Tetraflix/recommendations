@@ -1,7 +1,7 @@
 const redis = require('redis');
 const bluebird = require('bluebird');
 
-const host = 'redis';
+const host = 'localhost';
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 

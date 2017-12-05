@@ -116,11 +116,43 @@ The following information is not incorporated with the Docker-contained version 
 
 #### Elasticsearch
 
-Coming soon...
+The sessions database is integrated with Elasticsearch such that every message processed in inserted into the PostgreSQL database is also sent for analytical purposes to the Elasticsearch client. [Elastic's official Getting Started with ElasticSearch Guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html) outlines installation and configuration.
+
+The client is set up like so in database/dashboard/dashboardData.js:
+(Replace the bracketed field ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch instance is running. Elasticsearch is set to run on port 9200 by default.)
+
+```
+const ElasticSearch = require('elasticsearch');
+
+const client = new ElasticSearch.Client({
+  host: {
+    host: '127.0.0.1',
+    port: '[ELASTICSEARCH PORT]',
+  },
+});
+
+client.ping({ requestTimeout: 30000 }, (err) => {
+  if (err) {
+    console.error('elasticsearch cluster is down', err);
+  } else {
+    console.log('All is well with elasticsearch!');
+  }
+});
+```
 
 #### Kibana
 
-Coming soon...
+The Kibana server is configured to display data sent to the Elasticsearch client either manually or through Logstash (see section below for Logstash configuration details). For installation and set up, refer to [Elastic's official Getting Started with Kibana Guide](https://www.elastic.co/guide/en/kibana/current/reporting-getting-started.html).
+
+In config/kibana.yml (from within the downloaded Kibana directory), make sure that Kibana is configured to point to your elasticsearch instance. The default host is localhost, and the default port is 9200. Ensure that if you change these settings in Elasticsearch, you update the following line in your kibana.yml file to reflect those changes:
+```
+#elasticsearch.url: "http://localhost:9200"
+```
+
+The Kibana dashboard designed for the recommendations microservice displays data relevant to the overarching [business question](#the-business-question), in particular the ratio of recommended movies watched to non-recommended movies watched per day and per test group. The seed data generation script is built to produce a trend that mimics the expected behavior of un-simulated data. Other data of interest includes system metrics, including Amazon SQS message processing time (represented by request/response syntax for sake of simplicity).
+
+An example visualization with the existing data generation scripts is provided in this screenshot:
+![Data Flow](https://github.com/Tetraflix/recommendations/blob/development/images/kibanaExample.png)
 
 #### Logstash
 
@@ -129,7 +161,7 @@ Logstash is configured to pull logs from files that end in ".log" inside the "lo
 [Elastic's official Getting Started with Logstash guide](https://www.elastic.co/guide/en/logstash/current/getting-started-with-logstash.html) outlines the basic process of configuring Logstash.
 
 logstash.conf format for the recommendations server:
-(Replace the bracketed fields ```[PATH/TO/LOGS]``` with the file path to your .log files and ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch instance is running.)
+(Replace the bracketed fields ```[PATH/TO/LOGS]``` with the file path to your .log files and ```[ELASTICSEARCH PORT]``` with the port on which your elasticsearch (9200 by default) instance is running.)
 ```
 input {
   file {

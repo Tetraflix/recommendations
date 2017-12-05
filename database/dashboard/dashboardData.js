@@ -2,7 +2,7 @@ const ElasticSearch = require('elasticsearch');
 
 const client = new ElasticSearch.Client({
   host: {
-    host: 'localhost',
+    host: '127.0.0.1',
     port: '9200',
   },
 });

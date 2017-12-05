@@ -82,6 +82,24 @@ const sendMessages = options => (
   })
 );
 
+const sendMessageBatch = options => (
+  new Promise((resolve, reject) => {
+    sqs.sendMessageBatch(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  })
+);
+
+const deleteBatch = options => (
+  new Promise((resolve, reject) => {
+    sqs.deleteMessageBatch(options, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  })
+);
+
 const receiveSessionData = () => {
   let deleteId;
   const sessionOptions = {
@@ -109,43 +127,41 @@ const receiveSessionData = () => {
     });
 };
 cron.schedule('*/1 * * * * *', receiveSessionData);
-cron.schedule('*/1 * * * * *', receiveSessionData);
 
 const receiveUserData = () => {
-  let deleteId;
+  let data;
   const userOptions = {
     QueueUrl: queues.user,
     AttributeNames: ['All'],
+    MaxNumberOfMessages: 10,
   };
   receiveMessages(userOptions)
-    .then((data) => {
+    .then((body) => {
+      data = body;
       if (!data.Messages || !data.Messages[0]) {
         throw new Error('No Messages to Receive');
       }
-      deleteId = data.Messages[0].ReceiptHandle;
-      return genRecs.getDists(JSON.parse(data.Messages[0].Body));
-    })
-    .then((recs) => {
-      const recOptions = {
-        MessageBody: JSON.stringify(recs),
-        QueueUrl: queues.recommendations,
-        MessageGroupId: 'recommendations',
-      };
-      return sendMessages(recOptions);
-    })
-    .then(() => {
-      log({ action: 'response userdata' });
-      const deleteOptions = {
+      const deleteId = data.Messages.map((msg, index) => (
+        { Id: index.toString(), ReceiptHandle: msg.ReceiptHandle }
+      ));
+      const options = {
+        Entries: deleteId,
         QueueUrl: queues.user,
-        ReceiptHandle: deleteId,
       };
-      return deleteMessage(deleteOptions);
+      return deleteBatch(options);
     })
-    .catch(() => {
+    .then(() => genRecs.getDists(data.Messages))
+    .then((recs) => {
+      const options = {
+        Entries: recs,
+        QueueUrl: queues.recommendations,
+      };
+      return sendMessageBatch(options);
+    })
+    .catch((err) => {
       log({ action: 'response userdata', error: true });
     });
 };
-cron.schedule('*/1 * * * * *', receiveUserData);
 cron.schedule('*/1 * * * * *', receiveUserData);
 
 app.listen(port, () => {

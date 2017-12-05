@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const credentials = require('../../credentials/postgres.js');
 
-const host = 'postgres';
+const host = 'localhost';
 
 const sequelize = new Sequelize('ratios', credentials.username, credentials.password, {
   host,
