@@ -1,0 +1,43 @@
+{
+  "name": "recommendations",
+  "version": "1.0.0",
+  "description": "Recommendations Service of Tetraflix API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "nodemon": "nodemon --inspect server/index.js",
+    "start": "node server/index.js",
+    "redis": "redis-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tetraflix/recommendations.git"
+  },
+  "author": "Shweta Patrachari",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tetraflix/recommendations/issues"
+  },
+  "homepage": "https://github.com/Tetraflix/recommendations#readme",
+  "dependencies": {
+    "aws-sdk": "^2.142.0",
+    "bluebird": "^3.5.1",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "elasticsearch": "^13.3.1",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "express": "^4.16.2",
+    "mocha": "^4.0.1",
+    "node": "^8.9.0",
+    "node-cron": "^1.2.1",
+    "nodemon": "^1.12.1",
+    "pg": "^7.3.0",
+    "redis": "^2.8.0",
+    "sequelize": "^4.17.0",
+    "stream-rotate": "^0.1.0",
+    "timsort": "^0.3.0",
+    "winston": "^3.0.0-rc1"
+  }
+}
